@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">test-chat</string>
+    <string name="attach_file">Attach File</string>
+    <string name="send_message">Send</string>
+    <string name="type_message">Type a message…</string>
+    <string name="new_chat">New Chat</string>
+    <string name="no_chats_yet">No chats yet</string>
+
+</resources>

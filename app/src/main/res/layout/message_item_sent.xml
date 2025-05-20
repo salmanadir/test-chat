@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingStart="60dp"
+    android:paddingEnd="16dp"
+    android:paddingTop="4dp"
+    android:paddingBottom="4dp">
+
+    <TextView
+        android:id="@+id/messageTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/sent_message_bubble"
+        android:padding="12dp"
+        android:textColor="@android:color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="This is a sent message" />
+
+    <TextView
+        android:id="@+id/timeTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:layout_marginEnd="4dp"
+        android:textSize="10sp"
+        app:layout_constraintEnd_toEndOf="@id/messageTextView"
+        app:layout_constraintTop_toBottomOf="@id/messageTextView"
+        tools:text="10:30 AM" />
+
+    <ImageView
+        android:id="@+id/readStatusImageView"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_marginEnd="4dp"
+        android:src="@drawable/ic_message_read"
+        app:layout_constraintBottom_toBottomOf="@id/timeTextView"
+        app:layout_constraintEnd_toStartOf="@id/timeTextView"
+        app:layout_constraintTop_toTopOf="@id/timeTextView" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
