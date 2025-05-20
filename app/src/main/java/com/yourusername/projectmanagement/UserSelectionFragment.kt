@@ -1,6 +1,7 @@
 package com.yourusername.projectmanagement
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -52,6 +53,19 @@ class UserSelectionFragment : Fragment() {
 
         // Load users
         loadUsers()
+        navigateToUserSelection()
+
+    }
+    private fun navigateToUserSelection() {
+        Log.d("ChatListFragment", "Attempting to navigate to UserSelectionFragment")
+        try {
+            val action = ChatListFragmentDirections.actionChatListFragmentToUserSelectionFragment()
+            findNavController().navigate(action)
+            Log.d("ChatListFragment", "Navigation successful")
+        } catch (e: Exception) {
+            Log.e("ChatListFragment", "Navigation failed", e)
+            // Handle the error
+        }
     }
 
     private fun loadUsers() {
