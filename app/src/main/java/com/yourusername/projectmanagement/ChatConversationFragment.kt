@@ -9,16 +9,19 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
+import com.yourusername.projectmanagement.databinding.FragmentChatConversationBinding
 import com.yourusername.projectmanagement.models.User
 import com.yourusername.projectmanagement.repository.ChatRepository
 import com.yourusername.projectmanagement.repository.MessageAdapter
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Date
-import java.util.Locale
+import java.util.*
 
 class ChatConversationFragment : Fragment() {
     private var _binding: FragmentChatConversationBinding? = null
@@ -32,8 +35,6 @@ class ChatConversationFragment : Fragment() {
 
     private var otherUser: User? = null
     private var selectedAttachmentUri: Uri? = null
-
-    private val lifecycleScope = androidx.lifecycle.lifecycleScope
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -84,15 +85,12 @@ class ChatConversationFragment : Fragment() {
         lifecycleScope.launch {
             val currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: return@launch
 
-            // Get chat room details
             chatRepository.getUserChatRooms().collect { chatRooms ->
                 val chatRoom = chatRooms.firstOrNull { it.chatId == chatId } ?: return@collect
 
-                // Get the other user in the chat
                 val otherUserId = chatRoom.participants.firstOrNull { it != currentUserId } ?: return@collect
                 otherUser = chatRepository.getUserById(otherUserId)
 
-                // Update UI with user info
                 otherUser?.let { user ->
                     binding.usernameTextView.text = user.username
 
@@ -103,7 +101,6 @@ class ChatConversationFragment : Fragment() {
                             .into(binding.profileImageView)
                     }
 
-                    // Set online status
                     val lastSeen = user.lastSeen
                     val now = System.currentTimeMillis()
                     val isOnline = now - lastSeen < 2 * 60 * 1000 // 2 minutes
@@ -144,7 +141,6 @@ class ChatConversationFragment : Fragment() {
 
                 messageAdapter.updateMessages(messagesWithUsers, currentUserId)
 
-                // Scroll to bottom for new messages
                 if (messages.isNotEmpty()) {
                     binding.messagesRecyclerView.scrollToPosition(messages.size - 1)
                 }

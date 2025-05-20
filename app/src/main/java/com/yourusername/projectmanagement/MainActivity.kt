@@ -1,9 +1,9 @@
-
 package com.yourusername.projectmanagement
 
 import android.os.Bundle
-import android.provider.Settings.Global.putString
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.navigation.findNavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessaging
@@ -13,9 +13,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Handle notification click
+        // Handle notification click  
         intent.getStringExtra("chatId")?.let { chatId ->
-            // Navigate to chat conversation
+            // Navigate to chat conversation  
             val navController = findNavController(R.id.nav_host_fragment)
             val bundle = Bundle().apply {
                 putString("chatId", chatId)
@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity() {
             navController.navigate(R.id.chatConversationFragment, bundle)
         }
 
-        // Initialize FCM token
+        // Initialize FCM token  
         updateFcmToken()
     }
 
@@ -50,5 +50,8 @@ class MainActivity : AppCompatActivity() {
             .collection("users")
             .document(currentUser.uid)
             .update("lastSeen", lastSeen)
+            .addOnFailureListener { e ->
+                Log.e("UserStatus", "Failed to update last seen", e)
+            }
     }
 }

@@ -6,10 +6,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.toObject
+import com.yourusername.projectmanagement.databinding.FragmentUserSelectionBinding
 import com.yourusername.projectmanagement.models.User
 import com.yourusername.projectmanagement.repository.ChatRepository
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 class UserSelectionFragment : Fragment() {
     private var _binding: FragmentUserSelectionBinding? = null
@@ -19,8 +26,6 @@ class UserSelectionFragment : Fragment() {
     private val userAdapter = UserAdapter { user ->
         createChatWithUser(user)
     }
-
-    private val lifecycleScope = androidx.lifecycle.lifecycleScope
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -53,7 +58,6 @@ class UserSelectionFragment : Fragment() {
         lifecycleScope.launch {
             val currentUserId = FirebaseAuth.getInstance().currentUser?.uid ?: return@launch
 
-            // This is a simplified approach - you might want to implement pagination or filtering
             val usersRef = FirebaseFirestore.getInstance().collection("users")
             val users = usersRef.get().await().documents
                 .mapNotNull { doc ->
@@ -63,7 +67,6 @@ class UserSelectionFragment : Fragment() {
 
             userAdapter.updateUsers(users)
 
-            // Show/hide empty state
             binding.emptyStateTextView.visibility =
                 if (users.isEmpty()) View.VISIBLE else View.GONE
         }
@@ -76,7 +79,6 @@ class UserSelectionFragment : Fragment() {
 
                 if (result.isSuccess) {
                     val chatId = result.getOrThrow()
-                    // Navigate to chat conversation
                     val action = UserSelectionFragmentDirections
                         .actionUserSelectionFragmentToChatConversationFragment(chatId)
                     findNavController().navigate(action)

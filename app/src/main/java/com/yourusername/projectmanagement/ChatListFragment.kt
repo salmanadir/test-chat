@@ -5,12 +5,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
+import com.yourusername.projectmanagement.databinding.FragmentChatListBinding
 import com.yourusername.projectmanagement.models.ChatRoom
 import com.yourusername.projectmanagement.models.User
 import com.yourusername.projectmanagement.repository.ChatListAdapter
 import com.yourusername.projectmanagement.repository.ChatRepository
+import kotlinx.coroutines.launch
 
 class ChatListFragment : Fragment() {
     private var _binding: FragmentChatListBinding? = null
@@ -20,8 +24,6 @@ class ChatListFragment : Fragment() {
     private val chatListAdapter = ChatListAdapter { chatRoom ->
         navigateToChatConversation(chatRoom)
     }
-
-    private val lifecycleScope = androidx.lifecycle.lifecycleScope
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -54,11 +56,9 @@ class ChatListFragment : Fragment() {
         lifecycleScope.launch {
             chatRepository.getUserChatRooms().collect { chatRooms ->
                 val chatRoomsWithUsers = chatRooms.map { chatRoom ->
-                    // Get the other user in the chat
                     val otherUserId = chatRoom.participants.firstOrNull { it != FirebaseAuth.getInstance().currentUser?.uid }
                     val otherUser = otherUserId?.let { chatRepository.getUserById(it) } ?: User()
 
-                    // Get unread message count
                     val unreadCount = chatRepository.getUnreadMessageCount(chatRoom.chatId)
 
                     ChatListAdapter.ChatRoomWithUser(chatRoom, otherUser, unreadCount)
@@ -66,7 +66,6 @@ class ChatListFragment : Fragment() {
 
                 chatListAdapter.updateChatRooms(chatRoomsWithUsers)
 
-                // Show/hide empty state
                 binding.emptyStateTextView.visibility =
                     if (chatRoomsWithUsers.isEmpty()) View.VISIBLE else View.GONE
             }
@@ -74,12 +73,14 @@ class ChatListFragment : Fragment() {
     }
 
     private fun navigateToChatConversation(chatRoom: ChatRoom) {
-        val action = ChatListFragmentDirections.actionChatListFragmentToChatConversationFragment(chatRoom.chatId)
+        val action = ChatListFragmentDirections
+            .actionChatListFragmentToChatConversationFragment(chatRoom.chatId)
         findNavController().navigate(action)
     }
 
     private fun navigateToUserSelection() {
-        val action = ChatListFragmentDirections.actionChatListFragmentToUserSelectionFragment()
+        val action = ChatListFragmentDirections
+            .actionChatListFragmentToUserSelectionFragment()
         findNavController().navigate(action)
     }
 
